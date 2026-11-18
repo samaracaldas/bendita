@@ -278,6 +278,8 @@
 
 .field {
   display: grid;
+  /* Rows hug their content even when the field is taller than it (e.g. stretched in a grid). */
+  align-content: start;
   gap: 6px;
 }
 
@@ -307,6 +309,34 @@
 
 .field textarea {
   resize: vertical;
+}
+
+/* Every single-line field gets the same height, whatever the browser draws inside it. */
+.field input,
+.field select {
+  height: 50px;
+  line-height: normal;
+}
+
+/* Date fields: phones draw them wider, taller and centered. Keep them like the others. */
+.field input[type='date'] {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.field input[type='date']::-webkit-date-and-time-value {
+  margin: 0;
+  text-align: left;
+}
+
+/* iOS Safari ignores height on native date fields unless the native look is removed. */
+@supports (-webkit-touch-callout: none) {
+  .field input[type='date'] {
+    -webkit-appearance: none;
+    appearance: none;
+  }
 }
 
 .field [aria-invalid='true'] {

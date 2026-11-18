@@ -132,7 +132,7 @@ foto no Pexels (`https://www.pexels.com/photo/<id>/`):
 | rosquinha-nata | 797761 |
 | cafe-coado | 34995048 |
 | pingado | 26755323 |
-| cappuccino | 4913342 |
+| cappuccino | 31139336 |
 | achocolatado-gelado | 34035510 |
 
 As fotos da página Sobre ficam em `src/assets/sobre`: balcão (14929940), mãos na massa (5947593) e fornada

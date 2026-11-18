@@ -340,9 +340,11 @@ import { KITS, PERIODOS, TAXA_ENTREGA_FESTA } from '../data/festa';
     cursor: not-allowed;
   }
 
+  /* align-items: start: a hint under one field must not stretch the field beside it. */
   .row {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    align-items: start;
     gap: 16px;
   }
 
