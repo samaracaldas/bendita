@@ -1,0 +1,92 @@
+---
+const quotes = [
+  {
+    text: 'Peço o de goiabada toda sexta. Já deixam separado quando me veem na esquina.',
+    who: 'Marina',
+    where: 'vizinha da Rua Harmonia',
+    bg: 'var(--glace)',
+  },
+  {
+    text: 'O pão de queijo das 16h é o melhor da cidade. Isso eu falo com 40 anos de padaria nas costas.',
+    who: 'Seu Joaquim',
+    where: 'cliente desde a inauguração',
+    bg: 'var(--creme)',
+  },
+  {
+    text: 'Fizeram 300 mini sonhos para o aniversário da Lia e não sobrou nenhum.',
+    who: 'Paula',
+    where: 'mãe da Lia, 7 anos',
+    bg: 'var(--branco)',
+  },
+];
+---
+
+<section class="section" aria-labelledby="depoimentos-titulo">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Quem passa no balcão</p>
+      <h2 id="depoimentos-titulo">O que dizem da vitrine</h2>
+    </div>
+
+    <ul class="quotes" role="list">
+      {
+        quotes.map((q) => (
+          <li style={`background:${q.bg}`}>
+            <figure>
+              <blockquote>
+                <p>“{q.text}”</p>
+              </blockquote>
+              <figcaption>
+                <strong>{q.who}</strong>, {q.where}
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .quotes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    padding: 28px;
+    border-radius: var(--radius-m);
+    box-shadow: 0 0 0 2px var(--brigadeiro);
+  }
+
+  li:nth-child(1) {
+    transform: rotate(-1deg);
+  }
+
+  li:nth-child(3) {
+    transform: rotate(1deg);
+  }
+
+  figure {
+    margin: 0;
+    display: grid;
+    gap: 18px;
+    height: 100%;
+    align-content: space-between;
+  }
+
+  blockquote {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  figcaption {
+    font-size: 0.9375rem;
+  }
+</style>

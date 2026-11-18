@@ -1,0 +1,305 @@
+/* Bendita: doce de vitrine. Single light look (açúcar, brigadeiro, glacê, creme). */
+:root {
+  --acucar: #fff4ec;
+  --acucar-2: #fde6d8;
+  --brigadeiro: #3a1d17;
+  --brigadeiro-2: #6b4237;
+  --glace: #f7b4c8;
+  --glace-2: #fbd3df;
+  --creme: #ffd23f;
+  --branco: #fffdfb;
+
+  --display: 'Bagel Fat One', 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif;
+  --body: 'Gabarito Variable', 'Gabarito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius-l: 28px;
+  --radius-m: 20px;
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --header-h: 68px;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 16px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--acucar);
+  color: var(--brigadeiro);
+  font-family: var(--body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Components set their own display (grid, flex); `hidden` must still win. */
+[hidden] {
+  display: none !important;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1,
+h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 1;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--brigadeiro);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.on-dark :focus-visible,
+.on-dark:focus-visible {
+  outline-color: var(--creme);
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter-r);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 100;
+  background: var(--brigadeiro);
+  color: var(--creme);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-dark {
+  background: var(--brigadeiro);
+  color: var(--creme);
+}
+
+.btn-dark:hover {
+  background: #4d2820;
+}
+
+.btn-light {
+  background: var(--branco);
+  color: var(--brigadeiro);
+  box-shadow: inset 0 0 0 2px var(--brigadeiro);
+}
+
+.btn-light:hover {
+  background: var(--creme);
+}
+
+.btn-creme {
+  background: var(--creme);
+  color: var(--brigadeiro);
+}
+
+.btn-creme:hover {
+  background: #ffdc66;
+}
+
+.btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.section {
+  padding-block: clamp(56px, 9vw, 104px);
+}
+
+.section-head {
+  display: grid;
+  gap: 12px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+
+.section-head h2 {
+  font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+}
+
+.section-head p {
+  max-width: 56ch;
+  color: var(--brigadeiro-2);
+}
+
+.price {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Selects: the open list follows the brand where the browser supports customizable
+ * selects (Chrome and Edge 135+). Other browsers keep their native list, which works the same.
+ */
+@supports (appearance: base-select) {
+  select,
+  ::picker(select) {
+    appearance: base-select;
+  }
+
+  select {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  /* Chevron drawn with a mask so it takes the text color. */
+  select::picker-icon {
+    content: '';
+    width: 14px;
+    height: 14px;
+    margin-left: auto;
+    background: var(--brigadeiro);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+    transition: transform 0.2s ease;
+  }
+
+  select:open::picker-icon {
+    transform: scaleY(-1);
+  }
+
+  ::picker(select) {
+    margin-top: 6px;
+    padding: 6px;
+    border: 2px solid var(--brigadeiro);
+    border-radius: 16px;
+    background: var(--branco);
+    box-shadow: 6px 8px 0 var(--brigadeiro);
+    max-height: min(320px, 60vh);
+  }
+
+  select option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: var(--brigadeiro);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  select option:hover,
+  select option:focus-visible {
+    background: var(--acucar-2);
+    outline: none;
+  }
+
+  select option:checked {
+    background: var(--creme);
+    font-weight: 800;
+  }
+
+  select option::checkmark {
+    color: var(--brigadeiro);
+  }
+
+  select option:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}

@@ -1,0 +1,267 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Seu pedido · Bendita" description="Acompanhe o seu pedido na Bendita." noindex>
+  <header class="top">
+    <div class="wrap bar">
+      <a href="/" class="logo">bendita</a>
+      <a href="/#vitrine" class="back">Voltar para a vitrine</a>
+    </div>
+  </header>
+
+  <main id="conteudo" class="wrap main">
+    <!-- Loading -->
+    <section class="card" data-view="carregando" aria-busy="true">
+      <p class="eyebrow">Seu pedido</p>
+      <h1>Buscando seu pedido…</h1>
+    </section>
+
+    <!-- Not found / no link / demo -->
+    <section class="card" data-view="vazio" hidden>
+      <p class="eyebrow">Seu pedido</p>
+      <h1 data-vazio-titulo>Não achamos esse pedido</h1>
+      <p data-vazio-texto>
+        Confira se o link está completo. Ele aparece na confirmação, logo depois de você fechar a sacola.
+      </p>
+      <a class="btn btn-dark" href="/#vitrine">Ir para a vitrine</a>
+    </section>
+
+    <!-- The order -->
+    <section class="card" data-view="pedido" hidden aria-labelledby="status-titulo">
+      <p class="eyebrow" data-codigo></p>
+      <div aria-live="polite">
+        <h1 id="status-titulo" data-titulo></h1>
+        <p class="lead" data-texto></p>
+      </div>
+
+      <ol class="steps" data-steps aria-label="Andamento do pedido"></ol>
+
+      <dl class="facts">
+        <div>
+          <dt data-quando-rotulo>Retirada</dt>
+          <dd data-quando></dd>
+        </div>
+        <div>
+          <dt>Total</dt>
+          <dd data-total></dd>
+        </div>
+      </dl>
+
+      <h2 class="items-title">O que você pediu</h2>
+      <ul class="items" data-itens></ul>
+      <p class="pay">Pagamento na retirada ou na entrega.</p>
+
+      <p class="refresh" data-atualizado></p>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import '../scripts/pedido';
+</script>
+
+<style>
+  .top {
+    background: var(--brigadeiro);
+    color: var(--acucar);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 64px;
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-size: 1.75rem;
+    color: var(--glace);
+    text-decoration: none;
+  }
+
+  .back {
+    color: var(--creme);
+    font-weight: 700;
+  }
+
+  .top :focus-visible {
+    outline-color: var(--creme);
+  }
+
+  .main {
+    padding-block: clamp(24px, 5vw, 56px) 64px;
+  }
+
+  .card {
+    max-width: 640px;
+    margin-inline: auto;
+    display: grid;
+    gap: 20px;
+    padding: clamp(22px, 4vw, 40px);
+    background: var(--branco);
+    border-radius: var(--radius-l);
+    box-shadow: 0 0 0 3px var(--brigadeiro), 8px 10px 0 var(--brigadeiro);
+  }
+
+  .card[hidden] {
+    display: none;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    line-height: 1.02;
+  }
+
+  .lead {
+    margin-top: 10px;
+    font-size: 1.0625rem;
+  }
+
+  /* Progress: four dots joined by a line; done steps are filled, the current one pulses. */
+  .steps {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .steps :global(li) {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--brigadeiro-2);
+  }
+
+  .steps :global(li)::before {
+    content: '';
+    position: relative;
+    z-index: 1;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 3px solid var(--brigadeiro);
+    background: var(--branco);
+  }
+
+  /* Connector to the previous step. */
+  .steps :global(li + li)::after {
+    content: '';
+    position: absolute;
+    top: 9.5px;
+    right: 50%;
+    width: 100%;
+    height: 3px;
+    background: rgba(58, 29, 23, 0.2);
+  }
+
+  .steps :global(li.feito)::before {
+    background: var(--brigadeiro);
+  }
+
+  .steps :global(li.feito + li)::after,
+  .steps :global(li.feito + li.feito)::after {
+    background: var(--brigadeiro);
+  }
+
+  .steps :global(li[aria-current='step']) {
+    color: var(--brigadeiro);
+  }
+
+  .steps :global(li[aria-current='step'])::before {
+    background: var(--creme);
+    box-shadow: 0 0 0 5px rgba(255, 210, 63, 0.45);
+  }
+
+  .steps.cancelado {
+    opacity: 0.45;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+  }
+
+  .facts div {
+    padding: 14px 16px;
+    background: var(--acucar-2);
+    border-radius: 16px;
+  }
+
+  .facts dt {
+    font-size: 0.8125rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .facts dd {
+    margin: 4px 0 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .items-title {
+    font-size: 1.25rem;
+  }
+
+  .items {
+    list-style: none;
+    margin: -8px 0 0;
+    padding: 0;
+  }
+
+  .items :global(li) {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(58, 29, 23, 0.15);
+  }
+
+  .items :global(li b) {
+    font-variant-numeric: tabular-nums;
+    min-width: 2.5ch;
+  }
+
+  .pay,
+  .refresh {
+    font-size: 0.9375rem;
+    color: var(--brigadeiro-2);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .steps :global(li[aria-current='step'])::before {
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+  }
+
+  @keyframes pulse {
+    50% {
+      box-shadow: 0 0 0 9px rgba(255, 210, 63, 0.15);
+    }
+  }
+
+  @media (max-width: 460px) {
+    .steps :global(li) {
+      font-size: 0.75rem;
+    }
+
+    .facts {
+      grid-template-columns: 1fr;
+    }
+
+    .back {
+      font-size: 0.875rem;
+    }
+  }
+</style>

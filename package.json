@@ -1,0 +1,33 @@
+{
+  "name": "bendita",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@fontsource-variable/gabarito": "5.3.0",
+    "@fontsource/bagel-fat-one": "5.3.0",
+    "@supabase/supabase-js": "2.119.0",
+    "astro": "7.4.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@electric-sql/pglite": "0.5.16",
+    "@playwright/test": "1.65.1",
+    "@types/node": "22.20.5",
+    "jsdom": "31.0.1",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}

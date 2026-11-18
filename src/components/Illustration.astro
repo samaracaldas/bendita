@@ -1,0 +1,155 @@
+---
+import type { Art } from '../data/menu';
+
+interface Props {
+  art: Art;
+  tint: string;
+  class?: string;
+}
+
+const { art, tint, class: className } = Astro.props;
+const ink = '#3a1d17';
+const dough = '#eaa65b';
+---
+
+<svg
+  class={className}
+  viewBox="0 0 120 100"
+  aria-hidden="true"
+  focusable="false"
+  stroke={ink}
+  stroke-width="3.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  {art === 'sonho' && (
+    <g>
+      <!-- bottom half, filling, top dome: the filling color tells the flavors apart -->
+      <path d="M16 62c0 16 20 26 44 26s44-10 44-26z" fill={dough} />
+      <path d="M12 60c4-8 24-13 48-13s44 5 48 13c-2 9-24 13-48 13S14 69 12 60z" fill={tint} />
+      <path d="M18 56c0-24 18-40 42-40s42 16 42 40c-10 6-24 8-42 8s-32-2-42-8z" fill={dough} />
+      <g fill="#fff4ec" stroke="none">
+        <circle cx="40" cy="32" r="2.6" /><circle cx="54" cy="26" r="2.2" /><circle cx="68" cy="30" r="2.8" />
+        <circle cx="82" cy="28" r="2.2" /><circle cx="90" cy="42" r="2.4" /><circle cx="30" cy="44" r="2" />
+        <circle cx="74" cy="44" r="1.8" /><circle cx="48" cy="42" r="1.8" />
+      </g>
+    </g>
+  )}
+
+  {art === 'pao-de-queijo' && (
+    <g fill={tint}>
+      <circle cx="38" cy="62" r="22" />
+      <circle cx="82" cy="62" r="22" />
+      <circle cx="60" cy="40" r="22" />
+      <g fill={ink} stroke="none" opacity=".35">
+        <circle cx="52" cy="34" r="2" /><circle cx="66" cy="44" r="2.4" /><circle cx="30" cy="58" r="2" />
+        <circle cx="44" cy="70" r="2.4" /><circle cx="78" cy="56" r="2" /><circle cx="90" cy="70" r="2.2" />
+      </g>
+    </g>
+  )}
+
+  {art === 'coxinha' && (
+    <g>
+      <path d="M60 12c6 0 8 10 14 22 8 16 22 26 22 42 0 12-16 18-36 18s-36-6-36-18c0-16 14-26 22-42 6-12 8-22 14-22z" fill={tint} />
+      <path d="M44 70c4 3 10 4 16 4" fill="none" opacity=".5" />
+      <g fill={ink} stroke="none" opacity=".3">
+        <circle cx="52" cy="48" r="1.8" /><circle cx="68" cy="56" r="2" /><circle cx="58" cy="82" r="2" /><circle cx="76" cy="78" r="1.8" />
+      </g>
+    </g>
+  )}
+
+  {art === 'esfiha' && (
+    <g>
+      <circle cx="60" cy="52" r="40" fill={dough} />
+      <circle cx="60" cy="52" r="29" fill={tint} />
+      <g fill="#7fae5a" stroke="none">
+        <ellipse cx="50" cy="44" rx="5" ry="3" transform="rotate(-30 50 44)" />
+        <ellipse cx="70" cy="58" rx="5" ry="3" transform="rotate(20 70 58)" />
+      </g>
+      <circle cx="64" cy="40" r="3" fill="#fff4ec" stroke="none" />
+    </g>
+  )}
+
+  {art === 'pote' && (
+    <g>
+      <rect x="32" y="12" width="56" height="14" rx="5" fill="#f7b4c8" />
+      <path d="M34 26h52v58a8 8 0 0 1-8 8H42a8 8 0 0 1-8-8z" fill="#fff4ec" />
+      <path d="M36 72h48v12a6 6 0 0 1-6 6H42a6 6 0 0 1-6-6z" fill="#e7b46d" stroke="none" />
+      <rect x="36" y="58" width="48" height="12" fill={tint} stroke="none" />
+      <rect x="36" y="44" width="48" height="12" fill="#e7b46d" stroke="none" />
+      <rect x="36" y="30" width="48" height="12" fill={tint} stroke="none" />
+      <path d="M34 26h52v58a8 8 0 0 1-8 8H42a8 8 0 0 1-8-8z" fill="none" />
+    </g>
+  )}
+
+  {art === 'pao' && (
+    <g>
+      <rect x="14" y="30" width="92" height="52" rx="26" fill={tint} />
+      <path d="M38 44l10 22M56 42l10 22M74 44l10 22" fill="none" />
+    </g>
+  )}
+
+  {art === 'croissant' && (
+    <g>
+      <!-- five crescent segments, the middle one biggest -->
+      <path d="M8 70c0-14 8-24 18-24l8 34c-12 2-26-2-26-10z" fill={tint} />
+      <path d="M112 70c0-14-8-24-18-24l-8 34c12 2 26-2 26-10z" fill={tint} />
+      <path d="M24 44c6-10 16-14 24-12l2 50c-10 0-20-4-24-8z" fill={tint} />
+      <path d="M96 44c-6-10-16-14-24-12l-2 50c10 0 20-4 24-8z" fill={tint} />
+      <path d="M44 34c4-14 28-14 32 0l-4 50c-8 2-16 2-24 0z" fill={tint} />
+      <path d="M54 46c4 2 8 2 12 0M54 62c4 2 8 2 12 0" fill="none" opacity=".45" />
+    </g>
+  )}
+
+  {art === 'rosquinha' && (
+    <g fill={tint}>
+      <!-- three piped butter rings, the ridges drawn as short ticks -->
+      {[
+        [34, 62],
+        [86, 62],
+        [60, 38],
+      ].map(([x, y]) => (
+        <g>
+          <circle cx={x} cy={y} r="22" />
+          <circle cx={x} cy={y} r="8" fill="#fff4ec" />
+          <path
+            d={`M${x} ${y - 21}v6M${x + 21} ${y}h-6M${x} ${y + 21}v-6M${x - 21} ${y}h6M${x + 15} ${y - 15}l-4 4M${x - 15} ${y + 15}l4-4M${x + 15} ${y + 15}l-4-4M${x - 15} ${y - 15}l4 4`}
+            fill="none"
+            opacity=".5"
+          />
+        </g>
+      ))}
+    </g>
+  )}
+
+  {art === 'xicara' && (
+    <g>
+      <path d="M40 18c-4 6 4 8 0 14M58 14c-4 6 4 8 0 14M76 18c-4 6 4 8 0 14" fill="none" opacity=".55" />
+      <ellipse cx="58" cy="88" rx="44" ry="8" fill="#fff4ec" />
+      <path d="M86 50h6a12 12 0 0 1 0 24h-8" fill="none" stroke-width="5" />
+      <path d="M22 42h72l-6 34a12 12 0 0 1-12 10H40a12 12 0 0 1-12-10z" fill="#fff4ec" />
+      <ellipse cx="58" cy="42" rx="36" ry="7" fill={tint} />
+    </g>
+  )}
+
+  {art === 'copo' && (
+    <g>
+      <path d="M70 6l-8 26" fill="none" stroke-width="5" />
+      <path d="M34 26h52l-6 64a6 6 0 0 1-6 6H46a6 6 0 0 1-6-6z" fill="#fff4ec" />
+      <path d="M37 52h46l-3.5 38a6 6 0 0 1-6 6H46.5a6 6 0 0 1-6-6z" fill={tint} stroke="none" />
+      <path d="M44 34c2 8 0 14 2 20M60 34c-2 8 2 14 0 20M76 34c-2 8 0 14-2 20" fill="none" stroke={tint} stroke-width="4" />
+      <path d="M34 26h52l-6 64a6 6 0 0 1-6 6H46a6 6 0 0 1-6-6z" fill="none" />
+    </g>
+  )}
+
+  {art === 'rosca' && (
+    <g>
+      <circle cx="60" cy="52" r="38" fill={dough} />
+      <circle cx="60" cy="52" r="14" fill="#fff4ec" />
+      <path d="M30 34c10 8 18 6 26-2M64 28c6 10 18 12 26 8M88 62c-10 2-14 12-12 22M44 84c2-10-4-18-14-20" fill="none" />
+      <g fill={tint} stroke="none">
+        <circle cx="40" cy="48" r="3" /><circle cx="78" cy="44" r="3" /><circle cx="72" cy="74" r="3" /><circle cx="46" cy="72" r="3" />
+      </g>
+    </g>
+  )}
+</svg>

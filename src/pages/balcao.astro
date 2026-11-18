@@ -1,0 +1,809 @@
+---
+import '@fontsource/bagel-fat-one/latin-400.css';
+import '@fontsource-variable/gabarito/index.css';
+import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import { PHOTOS } from '../data/photos';
+import { SONHO_MONTADO_ID } from '../data/sonho';
+
+// Small square thumbnails for each product, so the counter can spot items at a glance.
+const thumbs: Record<string, string> = {};
+for (const [id, src] of Object.entries(PHOTOS)) {
+  const img = await getImage({ src, width: 96, height: 96, fit: 'cover', format: 'webp' });
+  thumbs[id] = img.src;
+}
+thumbs[SONHO_MONTADO_ID] = thumbs['sonho-creme'];
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <title>Balcão · Bendita</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap bar">
+        <p class="logo">bendita <span>balcão</span></p>
+        <div class="session" data-session hidden>
+          <span data-user></span>
+          <button type="button" class="btn btn-light small" data-logout>Sair</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap main">
+      <!-- Not configured -->
+      <section class="panel notice" data-view="offline" hidden>
+        <h1>Painel sem conexão</h1>
+        <p>
+          Este site está em modo demonstração. Defina <code>PUBLIC_SUPABASE_URL</code> e
+          <code>PUBLIC_SUPABASE_ANON_KEY</code> no deploy para usar o painel do balcão.
+        </p>
+        <a class="btn btn-dark" href="/">Voltar para a loja</a>
+      </section>
+
+      <!-- Login -->
+      <section class="panel login" data-view="login" hidden aria-labelledby="login-titulo">
+        <h1 id="login-titulo">Entrar no balcão</h1>
+        <p>Só para a equipe da Bendita.</p>
+        <form data-login novalidate>
+          <div class="field">
+            <label for="login-email">E-mail</label>
+            <input id="login-email" name="email" type="email" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="login-senha">Senha</label>
+            <input id="login-senha" name="senha" type="password" autocomplete="current-password" required />
+          </div>
+          <p class="error" data-login-error role="alert"></p>
+          <button type="submit" class="btn btn-dark">Entrar</button>
+        </form>
+      </section>
+
+      <!-- Not on the team -->
+      <section class="panel notice" data-view="forbidden" hidden>
+        <h1>Conta fora da equipe</h1>
+        <p>Você entrou, mas esta conta não está na equipe do balcão. Peça para alguém da equipe adicionar você.</p>
+      </section>
+
+      <!-- Board -->
+      <section data-view="board" hidden aria-labelledby="board-titulo">
+        <div class="board-head">
+          <h1 id="board-titulo">Pedidos</h1>
+          <div class="day">
+            <div class="day-stepper">
+              <button type="button" data-dia-step="-1" aria-label="Dia anterior">‹</button>
+              <label for="dia" class="sr-only">Dia</label>
+              <input id="dia" type="date" data-dia />
+              <button type="button" data-dia-step="1" aria-label="Próximo dia">›</button>
+            </div>
+            <button type="button" class="today" data-dia-hoje hidden>Hoje</button>
+          </div>
+          <p class="live" data-live>Conectando…</p>
+        </div>
+
+        <div class="columns">
+          <section class="column" aria-labelledby="col-recebido">
+            <h2 id="col-recebido">Recebidos <span data-count="recebido">0</span></h2>
+            <ol class="orders" data-col="recebido"></ol>
+          </section>
+          <section class="column" aria-labelledby="col-separado">
+            <h2 id="col-separado">Separados <span data-count="separado">0</span></h2>
+            <ol class="orders" data-col="separado"></ol>
+          </section>
+          <section class="column" aria-labelledby="col-pronto">
+            <h2 id="col-pronto">Prontos <span data-count="pronto">0</span></h2>
+            <ol class="orders" data-col="pronto"></ol>
+          </section>
+        </div>
+
+        <details class="done">
+          <summary>Entregues e cancelados <span data-count="fechados">0</span></summary>
+          <ol class="orders" data-col="fechados"></ol>
+        </details>
+
+        <section class="panel stock" aria-labelledby="estoque-titulo">
+          <h2 id="estoque-titulo">Estoque do dia</h2>
+          <p class="hint">Saiu uma fornada a mais? Ajuste aqui. Não dá para ficar abaixo do que já foi vendido.</p>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Tabela de estoque, role para os lados">
+          <table>
+            <thead>
+              <tr><th scope="col">Produto</th><th scope="col">Vendidos</th><th scope="col">Restam</th><th scope="col">Total do dia</th></tr>
+            </thead>
+            <tbody data-stock></tbody>
+          </table>
+          </div>
+        </section>
+
+        <section class="panel encomendas" aria-labelledby="encomendas-titulo">
+          <h2 id="encomendas-titulo">Encomendas de festa <span data-count="encomendas">0</span></h2>
+          <p class="hint">Do dia de hoje em diante. Confirme com o cliente pelo WhatsApp antes de marcar como confirmada.</p>
+          <p class="empty" data-encomendas-vazio>Nenhuma encomenda por enquanto.</p>
+          <ol class="enc-list" data-encomendas></ol>
+        </section>
+      </section>
+    </main>
+
+    <script type="application/json" id="fotos-produtos" set:html={JSON.stringify(thumbs)} />
+
+    <template id="encomenda">
+      <li class="encomenda">
+        <div class="enc-head">
+          <strong class="enc-when" data-enc-when></strong>
+          <span class="code" data-enc-code></span>
+          <span class="enc-status" data-enc-status></span>
+        </div>
+        <p class="who" data-enc-who></p>
+        <a class="whats" data-enc-whats target="_blank" rel="noopener"></a>
+        <p class="address" data-enc-address></p>
+        <ul class="items" data-enc-items></ul>
+        <p class="obs" data-enc-obs></p>
+        <div class="order-foot">
+          <span class="total" data-enc-total></span>
+          <div class="actions">
+            <button type="button" class="btn btn-dark small" data-enc-advance></button>
+            <button type="button" class="link-btn" data-enc-cancel>Cancelar</button>
+          </div>
+          <div class="confirm" data-enc-confirm hidden>
+            <span>Cancelar esta encomenda?</span>
+            <button type="button" class="btn btn-dark small" data-enc-yes>Sim, cancelar</button>
+            <button type="button" class="link-btn" data-enc-no>Não</button>
+          </div>
+        </div>
+      </li>
+    </template>
+
+    <template id="pedido">
+      <li class="order">
+        <div class="order-head">
+          <strong class="when" data-when></strong>
+          <span class="code" data-code></span>
+          <span class="kind" data-kind></span>
+        </div>
+        <p class="who" data-who></p>
+        <p class="address" data-address></p>
+        <ul class="items" data-items></ul>
+        <p class="obs" data-obs></p>
+        <div class="order-foot">
+          <span class="total" data-total></span>
+          <span class="status-label" data-status-label></span>
+          <div class="actions">
+            <button type="button" class="btn btn-dark small" data-advance></button>
+            <button type="button" class="link-btn" data-cancel>Cancelar</button>
+          </div>
+          <div class="confirm" data-confirm hidden>
+            <span>Cancelar e devolver ao estoque?</span>
+            <button type="button" class="btn btn-dark small" data-confirm-yes>Sim, cancelar</button>
+            <button type="button" class="link-btn" data-confirm-no>Não</button>
+          </div>
+        </div>
+      </li>
+    </template>
+
+    <p class="sr-only" aria-live="polite" data-announcer></p>
+
+    <script>
+      import '../scripts/balcao';
+    </script>
+  </body>
+</html>
+
+<style>
+  .top {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--brigadeiro);
+    color: var(--acucar);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 60px;
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-size: 1.75rem;
+    color: var(--glace);
+  }
+
+  .logo span {
+    font-family: var(--body);
+    font-size: 0.875rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--creme);
+    margin-left: 6px;
+  }
+
+  .session {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.875rem;
+  }
+
+  .top :focus-visible {
+    outline-color: var(--creme);
+  }
+
+  .btn.small {
+    min-height: 40px;
+    padding: 6px 14px;
+    font-size: 0.9375rem;
+  }
+
+  .main {
+    padding-block: 28px 64px;
+    display: grid;
+    /* minmax(0, 1fr): the wide stock table scrolls inside its panel instead of widening the page. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+  }
+
+  .panel {
+    background: var(--branco);
+    border-radius: var(--radius-m);
+    box-shadow: 0 0 0 2px var(--brigadeiro);
+    padding: clamp(20px, 4vw, 32px);
+    display: grid;
+    gap: 14px;
+  }
+
+  .login,
+  .notice {
+    max-width: 440px;
+    margin: 40px auto 0;
+  }
+
+  .login form {
+    display: grid;
+    gap: 14px;
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field label {
+    font-weight: 700;
+  }
+
+  .field input {
+    min-height: 48px;
+    padding: 10px 14px;
+    border: 2px solid var(--brigadeiro);
+    border-radius: 12px;
+    background: var(--branco);
+  }
+
+  .error {
+    color: #b3261e;
+    font-weight: 700;
+  }
+
+  .error:empty {
+    display: none;
+  }
+
+  .board-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    margin-bottom: 20px;
+  }
+
+  .board-head h1 {
+    margin: 0;
+  }
+
+  .day {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .day-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid var(--brigadeiro);
+    border-radius: 999px;
+    background: var(--branco);
+    overflow: hidden;
+  }
+
+  .day-stepper button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--brigadeiro);
+    font-size: 1.375rem;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .day-stepper button:hover {
+    background: var(--acucar-2);
+  }
+
+  .day-stepper input {
+    height: 40px;
+    padding: 0 4px;
+    border: 0;
+    border-inline: 1px solid rgba(58, 29, 23, 0.15);
+    background: transparent;
+    color: var(--brigadeiro);
+    font: inherit;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .day-stepper button:focus-visible,
+  .day-stepper input:focus-visible {
+    /* Inset, because the pill clips anything outside it. */
+    outline: 3px solid var(--brigadeiro);
+    outline-offset: -5px;
+  }
+
+  .today {
+    height: 36px;
+    padding: 0 14px;
+    border: 2px solid var(--brigadeiro);
+    border-radius: 999px;
+    background: var(--brigadeiro);
+    color: var(--creme);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .live {
+    margin-left: auto;
+    font-size: 0.875rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .live::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--brigadeiro-2);
+  }
+
+  .live.on::before {
+    background: #2e8540;
+    box-shadow: 0 0 0 3px rgba(46, 133, 64, 0.2);
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+
+  .column {
+    background: var(--acucar-2);
+    border-radius: var(--radius-m);
+    padding: 14px;
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .column h2,
+  .done summary,
+  .stock h2 {
+    font-size: 1.125rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  [data-count] {
+    display: inline-grid;
+    place-items: center;
+    min-width: 26px;
+    height: 26px;
+    padding-inline: 6px;
+    border-radius: 999px;
+    background: var(--brigadeiro);
+    color: var(--creme);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .orders {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .orders:empty::before {
+    content: 'Nada aqui.';
+    color: var(--brigadeiro-2);
+    font-size: 0.9375rem;
+  }
+
+  :global(.order) {
+    background: var(--branco);
+    border-radius: 14px;
+    box-shadow: 0 0 0 2px var(--brigadeiro);
+    padding: 14px;
+    display: grid;
+    gap: 8px;
+  }
+
+  :global(.order.new) {
+    animation: arrive 1.2s ease;
+  }
+
+  @keyframes arrive {
+    0% {
+      box-shadow: 0 0 0 2px var(--brigadeiro), 0 0 0 8px var(--creme);
+    }
+  }
+
+  :global(.order-head) {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+
+  :global(.when) {
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(.code) {
+    font-weight: 700;
+    color: var(--brigadeiro-2);
+  }
+
+  :global(.kind) {
+    margin-left: auto;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--glace);
+  }
+
+  :global(.kind.entrega) {
+    background: var(--creme);
+  }
+
+  :global(.who) {
+    font-weight: 700;
+  }
+
+  :global(.whats) {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #dcf5e3;
+    color: #14532d;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  :global(.whats:hover) {
+    background: #bbecc9;
+  }
+
+  :global(.link-btn) {
+    min-height: 40px;
+    padding: 6px 14px;
+    border: 2px solid var(--brigadeiro);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--brigadeiro);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  :global(.link-btn:hover) {
+    background: var(--acucar-2);
+  }
+
+  :global(.address),
+  :global(.obs) {
+    font-size: 0.9375rem;
+    color: var(--brigadeiro-2);
+  }
+
+  :global(.address:empty),
+  :global(.obs:empty) {
+    display: none;
+  }
+
+  :global(.obs) {
+    font-style: italic;
+  }
+
+  :global(.items) {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+  }
+
+  :global(.items li) {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  :global(.items li > span) {
+    padding-top: 2px;
+  }
+
+  :global(.items img) {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 0 0 2px var(--brigadeiro);
+    background: var(--acucar-2);
+  }
+
+  :global(.items b) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .encomendas {
+    margin-top: 24px;
+  }
+
+  .encomendas h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.125rem;
+    font-weight: 800;
+  }
+
+  .empty {
+    color: var(--brigadeiro-2);
+  }
+
+  .empty[hidden] {
+    display: none;
+  }
+
+  .enc-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 12px;
+  }
+
+  :global(.encomenda) {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--branco);
+    box-shadow: inset 0 0 0 2px var(--brigadeiro);
+  }
+
+  :global(.encomenda.nova) {
+    box-shadow: inset 0 0 0 3px #c2410c;
+  }
+
+  :global(.encomenda.entregue),
+  :global(.encomenda.cancelada) {
+    opacity: 0.6;
+  }
+
+  :global(.enc-head) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+  }
+
+  :global(.enc-status) {
+    margin-left: auto;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--creme);
+    font-size: 0.8125rem;
+    font-weight: 800;
+  }
+
+  :global(.order-foot) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    border-top: 2px dashed rgba(58, 29, 23, 0.2);
+    padding-top: 10px;
+  }
+
+  :global(.total) {
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(.status-label) {
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  :global(.status-label:empty) {
+    display: none;
+  }
+
+  :global(.order .actions),
+  :global(.order .confirm),
+  :global(.encomenda .actions),
+  :global(.encomenda .confirm) {
+    margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  :global(.order .confirm),
+  :global(.encomenda .confirm) {
+    margin-left: 0;
+    width: 100%;
+    font-weight: 700;
+  }
+
+  :global(.order.cancelado) {
+    opacity: 0.6;
+  }
+
+  :global(.order.cancelado .total) {
+    text-decoration: line-through;
+  }
+
+  .done {
+    margin-top: 16px;
+    background: var(--acucar-2);
+    border-radius: var(--radius-m);
+    padding: 14px;
+  }
+
+  .done summary {
+    cursor: pointer;
+    font-family: var(--display);
+    font-weight: 400;
+  }
+
+  .done .orders {
+    margin-top: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  }
+
+  .stock {
+    margin-top: 24px;
+  }
+
+  .hint {
+    font-size: 0.9375rem;
+    color: var(--brigadeiro-2);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Rows are rendered by balcao.ts, so they need :global to get these styles. */
+  table :global(th),
+  table :global(td) {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid rgba(58, 29, 23, 0.15);
+  }
+
+  thead th {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  table :global(tbody th) {
+    font-weight: 700;
+  }
+
+  :global(.stock-qty) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  :global(.stock-qty output) {
+    min-width: 3ch;
+    text-align: center;
+  }
+
+  :global(.stock-qty button) {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid var(--brigadeiro);
+    background: var(--branco);
+    color: var(--brigadeiro);
+    font-size: 1.25rem;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  :global(.stock-qty button:disabled) {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  :global(.low) {
+    color: #b3261e;
+    font-weight: 800;
+  }
+
+  @media (max-width: 900px) {
+    .columns {
+      grid-template-columns: 1fr;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      min-width: 480px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.order.new) {
+      animation: none;
+    }
+  }
+</style>

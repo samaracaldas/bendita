@@ -1,0 +1,439 @@
+---
+import { formatBRL } from '../data/menu';
+import { KITS, PERIODOS, TAXA_ENTREGA_FESTA } from '../data/festa';
+---
+
+<section id="festa" class="festa on-dark" aria-labelledby="festa-titulo">
+  <div class="wrap section">
+    <div class="layout">
+      <div class="section-head">
+        <p class="eyebrow">Encomendas</p>
+        <h2 id="festa-titulo">Festa? A gente faz o cento.</h2>
+        <p>
+          Monte a encomenda aqui com pelo menos 2 dias de antecedência e retire tudo embalado, pronto para servir.
+          Aniversário, chá de bebê ou reunião da firma: a conta é por cento.
+        </p>
+        <ol class="how">
+          <li>Escolha os centos e os sabores.</li>
+          <li>Diga o dia, o período e se retira ou recebe em casa.</li>
+          <li>A gente confirma pelo WhatsApp em até 1 dia útil. O pagamento é na retirada ou na entrega.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <!-- Form -->
+        <form class="festa-form" data-festa novalidate aria-labelledby="festa-form-titulo">
+          <h3 id="festa-form-titulo" class="sr-only">Montar encomenda de festa</h3>
+          <p class="festa-notice" data-festa-notice role="alert" tabindex="-1" hidden></p>
+
+          <fieldset class="kits">
+            <legend>O que vai ter na festa?</legend>
+            <ul role="list">
+              {
+                KITS.map((k) => (
+                  <li class="kit" data-kit={k.id} data-max={k.maxSabores}>
+                    <div class="kit-head">
+                      <div>
+                        <h4 id={`kit-${k.id}`}>{k.nome}</h4>
+                        <p class="nota">
+                          {k.nota} · <strong>{formatBRL(k.preco)}</strong> o cento
+                        </p>
+                      </div>
+                      <div class="kit-stepper" role="group" aria-labelledby={`kit-${k.id}`}>
+                        <button type="button" data-step="-1" aria-label={`Um cento a menos de ${k.nome}`} disabled>
+                          <span aria-hidden="true">−</span>
+                        </button>
+                        <output data-qtd aria-live="polite" aria-label={`Centos de ${k.nome}`}>0</output>
+                        <button type="button" data-step="1" aria-label={`Um cento a mais de ${k.nome}`}>
+                          <span aria-hidden="true">+</span>
+                        </button>
+                      </div>
+                    </div>
+                    {k.maxSabores > 0 && (
+                      <fieldset class="sabores" data-sabores hidden>
+                        <legend>
+                          {k.maxSabores === 1 ? 'Sabor' : `Até ${k.maxSabores} sabores`}
+                          <span class="sr-only"> de {k.nome}</span>
+                        </legend>
+                        <div class="chips">
+                          {k.sabores.map((s, i) => (
+                            <label class="chip">
+                              <input type="checkbox" name={`sabor-${k.id}`} value={s.id} checked={i === 0} />
+                              {s.nome}
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+                    )}
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="error" id="festa-itens-erro" data-error-for="itens"></p>
+          </fieldset>
+
+          <div class="row">
+            <div class="field">
+              <label for="festa-data">Dia da festa</label>
+              <input id="festa-data" name="data" type="date" required aria-describedby="festa-data-dica festa-data-erro" />
+              <small id="festa-data-dica">A partir de 2 dias. Segunda a padaria fecha.</small>
+              <p class="error" id="festa-data-erro" data-error-for="data"></p>
+            </div>
+            <div class="field">
+              <label for="festa-periodo">Período</label>
+              <select id="festa-periodo" name="periodo" required aria-describedby="festa-periodo-erro">
+                {PERIODOS.map((p) => <option value={p.id}>{p.nome}</option>)}
+              </select>
+              <p class="error" id="festa-periodo-erro" data-error-for="periodo"></p>
+            </div>
+          </div>
+
+          <fieldset class="tipo">
+            <legend>Como você quer receber?</legend>
+            <label class="chip">
+              <input type="radio" name="tipo" value="retirada" checked />
+              Retirar no balcão (grátis)
+            </label>
+            <label class="chip">
+              <input type="radio" name="tipo" value="entrega" />
+              Entrega ({formatBRL(TAXA_ENTREGA_FESTA)})
+            </label>
+          </fieldset>
+
+          <div class="field" data-festa-endereco hidden>
+            <label for="festa-endereco">Endereço da festa</label>
+            <input id="festa-endereco" name="endereco" type="text" autocomplete="street-address" maxlength="80" aria-describedby="festa-endereco-erro" />
+            <p class="error" id="festa-endereco-erro" data-error-for="endereco"></p>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="festa-nome">Seu nome</label>
+              <input id="festa-nome" name="nome" type="text" autocomplete="name" maxlength="40" required aria-describedby="festa-nome-erro" />
+              <p class="error" id="festa-nome-erro" data-error-for="nome"></p>
+            </div>
+            <div class="field">
+              <label for="festa-telefone">WhatsApp com DDD</label>
+              <input id="festa-telefone" name="telefone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(11) 98888-7777" required aria-describedby="festa-telefone-erro" />
+              <p class="error" id="festa-telefone-erro" data-error-for="telefone"></p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="festa-obs">Observação <span class="optional">(opcional)</span></label>
+            <textarea id="festa-obs" name="obs" rows="2" maxlength="200" placeholder="Tema da festa, horário exato, alergias…"></textarea>
+          </div>
+
+          <dl class="totals">
+            <div><dt>Subtotal</dt><dd data-festa-subtotal>R$ 0,00</dd></div>
+            <div><dt>Entrega</dt><dd data-festa-taxa>Grátis</dd></div>
+            <div class="total"><dt>Total</dt><dd data-festa-total>R$ 0,00</dd></div>
+          </dl>
+
+          <button type="submit" class="btn btn-creme wide">Enviar encomenda</button>
+          <p class="sim-note" data-festa-note></p>
+        </form>
+
+        <!-- Done -->
+        <div class="festa-done" data-festa-done hidden tabindex="-1">
+          <p class="code" data-festa-codigo></p>
+          <p data-festa-resumo></p>
+          <p class="sim-note" data-festa-done-note></p>
+          <button type="button" class="btn btn-light" data-festa-nova>Fazer outra encomenda</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .festa {
+    background: var(--brigadeiro);
+    color: var(--acucar);
+  }
+
+  .festa .section-head p,
+  .how {
+    color: var(--acucar-2);
+  }
+
+  .festa .eyebrow {
+    color: var(--glace);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+    gap: clamp(28px, 5vw, 64px);
+    align-items: start;
+  }
+
+  .layout > .section-head {
+    margin-bottom: 0;
+    position: sticky;
+    top: calc(var(--header-h, 72px) + 24px);
+  }
+
+  .how {
+    margin: 20px 0 0;
+    padding-left: 1.25em;
+    display: grid;
+    gap: 8px;
+  }
+
+  /* The form sits on a light card so inputs keep their normal contrast. */
+  .card {
+    padding: clamp(18px, 3vw, 28px);
+    background: var(--acucar);
+    color: var(--brigadeiro);
+    border-radius: var(--radius-l);
+  }
+
+  .festa-form {
+    display: grid;
+    gap: 20px;
+  }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  legend {
+    padding: 0;
+    margin-bottom: 10px;
+    font-weight: 800;
+  }
+
+  .kits ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .kit {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--branco);
+    box-shadow: inset 0 0 0 2px rgba(58, 29, 23, 0.15);
+  }
+
+  .kit.on {
+    box-shadow: inset 0 0 0 2px var(--brigadeiro);
+  }
+
+  .kit-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 800;
+  }
+
+  .nota {
+    margin: 2px 0 0;
+    font-size: 0.875rem;
+    color: var(--brigadeiro-2);
+  }
+
+  .kit-stepper {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .kit-stepper button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid var(--brigadeiro);
+    background: var(--branco);
+    color: var(--brigadeiro);
+    font-size: 1.25rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .kit-stepper button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .kit-stepper output {
+    min-width: 2ch;
+    text-align: center;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sabores[hidden] {
+    display: none;
+  }
+
+  .sabores legend {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--brigadeiro-2);
+  }
+
+  .chips,
+  .tipo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tipo legend {
+    width: 100%;
+  }
+
+  .chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--branco);
+    box-shadow: inset 0 0 0 2px rgba(58, 29, 23, 0.25);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .chip:has(input:checked) {
+    background: var(--brigadeiro);
+    color: var(--creme);
+    box-shadow: inset 0 0 0 2px var(--brigadeiro);
+  }
+
+  .chip:has(input:focus-visible) {
+    outline: 3px solid var(--brigadeiro);
+    outline-offset: 3px;
+  }
+
+  .chip:has(input:disabled) {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .field small {
+    font-size: 0.8125rem;
+    color: var(--brigadeiro-2);
+  }
+
+  .totals {
+    margin: 0;
+    display: grid;
+    gap: 6px;
+    padding-top: 14px;
+    border-top: 2px dashed rgba(58, 29, 23, 0.25);
+  }
+
+  .totals div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .totals dd {
+    margin: 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .totals .total {
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+
+  .wide {
+    width: 100%;
+  }
+
+  .festa-form .btn-creme {
+    background: var(--brigadeiro);
+    color: var(--creme);
+  }
+
+  .festa-notice {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #ffe0dc;
+    color: #8c1d18;
+    font-weight: 700;
+  }
+
+  .festa-notice[hidden],
+  .festa-done[hidden] {
+    display: none;
+  }
+
+  .sim-note {
+    font-size: 0.875rem;
+    color: var(--brigadeiro-2);
+    text-align: center;
+  }
+
+  .sim-note:empty {
+    display: none;
+  }
+
+  .festa-done {
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    padding-block: 24px;
+    text-align: center;
+  }
+
+  .festa-done .code {
+    font-family: var(--display);
+    font-size: 2.25rem;
+  }
+
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+
+    .layout > .section-head {
+      position: static;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

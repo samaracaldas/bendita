@@ -1,0 +1,68 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer on-dark">
+  <div class="wrap inner">
+    <p class="logo">bendita</p>
+    <p class="note">
+      A Bendita é uma padaria fictícia, criada como projeto de portfólio por{' '}
+      <a href="https://github.com/samaracaldas">Samara Caldas</a>. Os pedidos chegam a um banco de dados de verdade,
+      mas nada é produzido, entregue ou cobrado.
+    </p>
+    <nav class="links" aria-label="Rodapé">
+      <a href="/#vitrine">Vitrine</a>
+      <a href="/#festa">Encomendas</a>
+      <a href="/sobre">Sobre a Bendita</a>
+    </nav>
+    <p class="copy">© {year} Bendita</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--brigadeiro);
+    color: var(--acucar-2);
+    padding-block: 40px calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 32px;
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-size: 2rem;
+    color: var(--glace);
+    line-height: 1;
+  }
+
+  .note {
+    flex: 1 1 320px;
+    max-width: 60ch;
+    font-size: 0.9375rem;
+  }
+
+  .note a {
+    color: var(--creme);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+  }
+
+  .links a {
+    color: var(--creme);
+    font-weight: 700;
+    text-underline-offset: 3px;
+  }
+
+  .copy {
+    font-size: 0.875rem;
+  }
+</style>

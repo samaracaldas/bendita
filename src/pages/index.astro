@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Vitrine from '../components/Vitrine.astro';
+import Montador from '../components/Montador.astro';
+import Festa from '../components/Festa.astro';
+import Depoimentos from '../components/Depoimentos.astro';
+import Visite from '../components/Visite.astro';
+import Footer from '../components/Footer.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import '../styles/cart.css';
+---
+
+<Base
+  title="Bendita · Sonho recheado na hora"
+  description="Doceria e padaria na Vila Madalena. Sonho recheado na hora, pão de queijo de hora em hora e bolo de pote. Monte sua sacola e retire no balcão."
+>
+  <Header />
+  <main id="conteudo">
+    <Hero />
+    <Vitrine />
+    <Montador />
+    <Festa />
+    <Depoimentos />
+    <Visite />
+  </main>
+  <Footer />
+  <CartDrawer />
+</Base>
+
+<script>
+  import '../scripts/cart-ui';
+  import '../scripts/montador';
+  import '../scripts/combo';
+  import '../scripts/festa';
+</script>

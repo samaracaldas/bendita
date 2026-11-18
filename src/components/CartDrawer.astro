@@ -1,0 +1,127 @@
+---
+import { DELIVERY_FEE, formatBRL } from '../data/menu';
+import Illustration from './Illustration.astro';
+---
+
+<dialog id="sacola" class="drawer" aria-labelledby="sacola-titulo">
+  <div class="panel">
+    <header class="top">
+      <h2 id="sacola-titulo" data-title>Sua sacola</h2>
+      <button type="button" class="icon-btn" data-cart-close aria-label="Fechar sacola">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </header>
+
+    <!-- 1 · Cart -->
+    <div class="view" data-view="cart">
+      <div class="empty" data-empty>
+        <Illustration art="sonho" tint="#f7b4c8" class="empty-art" />
+        <p><strong>Sua sacola está vazia.</strong> A vitrine, não.</p>
+        <button type="button" class="btn btn-dark" data-go-vitrine>Ver a vitrine</button>
+      </div>
+
+      <div class="filled" data-filled hidden>
+        <p class="bag-notice" data-bag-notice role="alert" tabindex="-1" hidden></p>
+        <ul class="lines" role="list" data-lines></ul>
+
+        <fieldset class="fulfillment">
+          <legend>Como você quer receber?</legend>
+          <label>
+            <input type="radio" name="fulfillment" value="retirada" checked />
+            <span><strong>Retirar no balcão</strong><small>Grátis · Rua Harmonia, 318</small></span>
+          </label>
+          <label>
+            <input type="radio" name="fulfillment" value="entrega" />
+            <span><strong>Entrega</strong><small>{formatBRL(DELIVERY_FEE)} · Vila Madalena e Pinheiros</small></span>
+          </label>
+        </fieldset>
+
+        <p class="pickup-note" id="aviso-retirada" data-pickup-note hidden></p>
+
+        <dl class="totals">
+          <div><dt>Subtotal</dt><dd data-subtotal>R$ 0,00</dd></div>
+          <div class="combo" data-combo-row hidden><dt data-combo-label>Combo sonho + café</dt><dd data-discount></dd></div>
+          <div><dt>Entrega</dt><dd data-fee>Grátis</dd></div>
+          <div class="total"><dt>Total</dt><dd data-total>R$ 0,00</dd></div>
+        </dl>
+
+        <div class="footer-actions">
+          <button type="button" class="btn btn-dark wide" data-go-checkout>Continuar</button>
+          <button type="button" class="link-btn" data-clear>Esvaziar sacola</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · Checkout (simulated) -->
+    <form class="view checkout" data-view="checkout" method="dialog" hidden novalidate>
+      <p class="sim-note" data-checkout-note></p>
+
+      <div class="field">
+        <label for="pedido-nome">Nome para o pedido</label>
+        <input id="pedido-nome" name="nome" type="text" autocomplete="given-name" required minlength="2" maxlength="40" aria-describedby="pedido-nome-erro" />
+        <p class="error" id="pedido-nome-erro" data-error-for="nome"></p>
+      </div>
+
+      <div class="field">
+        <label for="pedido-horario" data-slot-label>Horário de retirada</label>
+        <select id="pedido-horario" name="horario" required aria-describedby="pedido-horario-erro"></select>
+        <p class="error" id="pedido-horario-erro" data-error-for="horario"></p>
+      </div>
+
+      <div class="field" data-address-field hidden>
+        <label for="pedido-endereco">Endereço de entrega</label>
+        <input id="pedido-endereco" name="endereco" type="text" autocomplete="street-address" maxlength="80" aria-describedby="pedido-endereco-erro" />
+        <p class="error" id="pedido-endereco-erro" data-error-for="endereco"></p>
+      </div>
+
+      <div class="field">
+        <label for="pedido-obs">Observação <span class="optional">(opcional)</span></label>
+        <textarea id="pedido-obs" name="obs" rows="2" maxlength="140" placeholder="Ex.: sonho com pouco açúcar"></textarea>
+      </div>
+
+      <dl class="totals compact">
+        <div class="total"><dt>Total</dt><dd data-total>R$ 0,00</dd></div>
+      </dl>
+
+      <div class="footer-actions">
+        <button type="submit" class="btn btn-dark wide">Confirmar pedido</button>
+        <button type="button" class="link-btn" data-back>Voltar para a sacola</button>
+      </div>
+    </form>
+
+    <!-- 3 · Done -->
+    <div class="view done" data-view="done" hidden tabindex="-1">
+      <Illustration art="sonho" tint="#ffd23f" class="done-art" />
+      <p class="code" data-order-code></p>
+      <p data-order-summary></p>
+      <p class="sim-note" data-order-note></p>
+      <a class="btn btn-dark wide" data-order-track hidden>Acompanhar pedido</a>
+      <button type="button" class="btn btn-light wide" data-cart-close>Voltar para a vitrine</button>
+    </div>
+  </div>
+</dialog>
+
+<template id="linha-sacola">
+  <li class="line">
+    <div class="line-info">
+      <strong data-name></strong>
+      <span data-unit></span>
+    </div>
+    <div class="stepper" role="group">
+      <button type="button" class="step" data-dec>
+        <span aria-hidden="true">−</span>
+      </button>
+      <output class="qty" data-qty aria-live="polite"></output>
+      <button type="button" class="step" data-inc>
+        <span aria-hidden="true">+</span>
+      </button>
+    </div>
+    <span class="line-total price" data-line-total></span>
+    <button type="button" class="link-btn remove" data-remove>Remover</button>
+  </li>
+</template>
+
+<p class="sr-only" aria-live="polite" data-announcer></p>
+<div class="toast" aria-hidden="true" data-toast hidden></div>
