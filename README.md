@@ -69,7 +69,7 @@ painel /balcao  <--- Realtime ---------   pedidos (só para a equipe, via RLS)
   `20261118090000_limites_e_acompanhamento.sql` (limites e acompanhamento) e `20261118120000_bebidas_e_combo.sql`
   (bebidas, croissant, rosquinha e combo), `20261118130000_bolos_de_pote.sql` (bolos de pote de limão e red velvet no
   lugar de manga e prestígio), `20261118140000_encomendas.sql` (encomendas de festa) e `20261118150000_visitante.sql`
-  (conta de visitante somente leitura).
+  (conta de visitante somente leitura) e `20261118160000_demonstracao.sql` (movimento de demonstração).
 
 ## Segurança
 
@@ -176,6 +176,9 @@ npm run preview
 
    Depois cadastre `PUBLIC_BALCAO_VISITANTE_EMAIL` e `PUBLIC_BALCAO_VISITANTE_SENHA` na Vercel. Essa senha fica
    pública na página de propósito; o que protege os dados é o papel `visitante` no banco.
+8. Opcional, movimento de demonstração: rode `supabase/demonstracao.sql` no SQL Editor. Ele cria um dia de pedidos
+   realistas (marcados com `demo`, reservando estoque como pedidos de verdade) e encomendas de festa, e pode ser
+   agendado todo dia pelo pg_cron para o painel nunca ficar vazio.
 
 ## Testes
 
