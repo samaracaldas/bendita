@@ -6,6 +6,10 @@ Loja de uma doceria e padaria fictícia da Vila Madalena: vitrine com estoque do
 pedidos gravados no Supabase e um painel do balcão que recebe os pedidos em tempo real.
 Substitui dois projetos antigos do meu portfólio, o Ice Land (2024, jQuery) e o The Bake (Angular).
 
+**No ar:** [loja](https://bendita-samaracaldas.vercel.app/) ·
+[painel do balcão](https://bendita-samaracaldas.vercel.app/balcao) (clique em **Entrar como visitante**: dá para ver
+tudo, sem mudar nada). Faça um pedido na loja numa aba e veja ele chegar no painel na outra.
+
 ## O que tem
 
 - **Vitrine** com 18 produtos (sonhos, salgados, bolos de pote, pães e bebidas) e filtro por categoria. Cada card
