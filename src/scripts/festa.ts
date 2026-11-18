@@ -30,7 +30,7 @@ if (form) {
   dataInput.max = window_.max;
 
   $('[data-festa-note]').textContent = online
-    ? 'Nada é cobrado agora: a gente confirma pelo WhatsApp e você paga na retirada ou na entrega.'
+    ? 'Projeto de portfólio: a encomenda aparece no painel, que visitantes podem ver. Use nome, telefone e endereço fictícios. Nada é cobrado.'
     : 'Modo demonstração: a encomenda é simulada no navegador e nada é enviado.';
 
   /* ---------- State ---------- */

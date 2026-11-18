@@ -98,6 +98,30 @@ if (!URL || !KEY) {
   const diaInput = $<HTMLInputElement>('[data-dia]');
   diaInput.value = hojeSP();
   let channel: RealtimeChannel | null = null;
+  /** Read-only visitor: buttons are disabled here, and the database refuses changes anyway. */
+  let readonly = false;
+  const lockButtons = (root: ParentNode) => {
+    if (!readonly) return;
+    root
+      .querySelectorAll<HTMLButtonElement>('[data-advance], [data-cancel], [data-enc-advance], [data-enc-cancel], .stock-qty button')
+      .forEach((b) => {
+        b.disabled = true;
+        b.title = 'Modo visitante: só leitura';
+      });
+  };
+
+  const VISIT_EMAIL = import.meta.env.PUBLIC_BALCAO_VISITANTE_EMAIL;
+  const VISIT_PASS = import.meta.env.PUBLIC_BALCAO_VISITANTE_SENHA;
+  if (VISIT_EMAIL && VISIT_PASS) {
+    $('[data-visitante]').hidden = false;
+    $<HTMLButtonElement>('[data-visitante-entrar]').addEventListener('click', async (e) => {
+      const button = e.currentTarget as HTMLButtonElement;
+      button.disabled = true;
+      const { error: err } = await supabase.auth.signInWithPassword({ email: VISIT_EMAIL, password: VISIT_PASS });
+      button.disabled = false;
+      if (err) $('[data-login-error]').textContent = 'O acesso de visitante está indisponível agora.';
+    });
+  }
   let known = new Set<string>();
   let firstLoad = true;
 
@@ -112,6 +136,9 @@ if (!URL || !KEY) {
     $('[data-user]').textContent = session.user.email ?? '';
     const { data: ok } = await supabase.rpc('eh_equipe');
     if (!ok) return show('forbidden');
+    const { data: papel } = await supabase.rpc('papel_atual');
+    readonly = papel === 'visitante';
+    $('[data-readonly-banner]').hidden = !readonly;
     show('board');
     await Promise.all([loadOrders(), loadStock(), loadEncomendas()]);
     subscribe();
@@ -227,6 +254,7 @@ if (!URL || !KEY) {
       $(`[data-col="${col}"]`).replaceChildren(...items);
       $(`[data-count="${col}"]`).textContent = String(items.length);
     }
+    lockButtons(document);
 
     if (!firstLoad) {
       const fresh = pedidos.filter((p) => !known.has(p.id));
@@ -333,6 +361,7 @@ if (!URL || !KEY) {
         return tr;
       }),
     );
+    lockButtons($('[data-stock]'));
   }
 
   $('[data-stock]').addEventListener('click', async (e) => {
@@ -412,6 +441,7 @@ if (!URL || !KEY) {
       return li;
     });
     $('[data-encomendas]').replaceChildren(...items);
+    lockButtons($('[data-encomendas]'));
     $('[data-count="encomendas"]').textContent = String(lista.filter((e) => e.status !== 'cancelada' && e.status !== 'entregue').length);
     $('[data-encomendas-vazio]').hidden = lista.length > 0;
   }

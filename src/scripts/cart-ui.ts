@@ -427,7 +427,7 @@ window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
 $('[data-checkout-note]', dialog).textContent = online
-  ? 'Você paga na retirada ou na entrega. Nada é cobrado agora.'
+  ? 'Projeto de portfólio: o pedido vai para um banco de verdade e aparece no painel, que visitantes podem ver. Use nome e endereço fictícios. Nada é cobrado.'
   : 'Modo demonstração: o pedido é simulado e nenhum dado sai do seu navegador.';
 
 cart.subscribe(render);

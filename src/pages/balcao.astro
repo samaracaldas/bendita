@@ -62,6 +62,10 @@ thumbs[SONHO_MONTADO_ID] = thumbs['sonho-creme'];
           <p class="error" data-login-error role="alert"></p>
           <button type="submit" class="btn btn-dark">Entrar</button>
         </form>
+        <div class="visitante" data-visitante hidden>
+          <p><strong>Só quer conhecer o painel?</strong> Entre como visitante: dá para ver tudo, sem mudar nada.</p>
+          <button type="button" class="btn btn-light" data-visitante-entrar>Entrar como visitante</button>
+        </div>
       </section>
 
       <!-- Not on the team -->
@@ -72,6 +76,10 @@ thumbs[SONHO_MONTADO_ID] = thumbs['sonho-creme'];
 
       <!-- Board -->
       <section data-view="board" hidden aria-labelledby="board-titulo">
+        <p class="readonly-banner" data-readonly-banner hidden>
+          <strong>Modo visitante.</strong> Você vê os pedidos, as encomendas e o estoque em tempo real, mas os botões
+          ficam desativados. Faça um pedido na <a href="/">loja</a> e veja ele chegar aqui.
+        </p>
         <div class="board-head">
           <h1 id="board-titulo">Pedidos</h1>
           <div class="day">
@@ -300,6 +308,27 @@ thumbs[SONHO_MONTADO_ID] = thumbs['sonho-creme'];
 
   .error:empty {
     display: none;
+  }
+
+  .visitante {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 2px dashed rgba(58, 29, 23, 0.2);
+  }
+
+  .visitante[hidden],
+  .readonly-banner[hidden] {
+    display: none;
+  }
+
+  .readonly-banner {
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: var(--creme);
+    font-size: 0.9375rem;
   }
 
   .board-head {

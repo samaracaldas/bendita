@@ -34,6 +34,8 @@ Substitui dois projetos antigos do meu portfólio, o Ice Land (2024, jQuery) e o
   entregue) com miniatura de cada produto, cancelamento que devolve as unidades ao estoque, ajuste do estoque do dia,
   encomendas de festa dos próximos dias (nova, confirmada, pronta, entregue) com link direto para o WhatsApp do
   cliente, e atualização ao vivo pelo Supabase Realtime.
+- **Visitante no painel**: um botão "Entrar como visitante" abre o painel numa conta somente leitura. Ela vê pedidos,
+  encomendas e estoque ao vivo, mas o banco recusa qualquer mudança (papel `visitante` na tabela `equipe`).
 - **Sobre a Bendita** (`/sobre`): a história da padaria, as três regras da cozinha e a equipe.
 - **Modo demonstração**: sem as variáveis do Supabase, o site funciona igual, mas o pedido é simulado no navegador.
 
@@ -62,7 +64,8 @@ painel /balcao  <--- Realtime ---------   pedidos (só para a equipe, via RLS)
 - As migrations ficam em `supabase/migrations` e rodam em ordem: `20261117120000_bendita.sql` (schema, regras e dados),
   `20261118090000_limites_e_acompanhamento.sql` (limites e acompanhamento) e `20261118120000_bebidas_e_combo.sql`
   (bebidas, croissant, rosquinha e combo), `20261118130000_bolos_de_pote.sql` (bolos de pote de limão e red velvet no
-  lugar de manga e prestígio) e `20261118140000_encomendas.sql` (encomendas de festa).
+  lugar de manga e prestígio), `20261118140000_encomendas.sql` (encomendas de festa) e `20261118150000_visitante.sql`
+  (conta de visitante somente leitura).
 
 ## Segurança
 
@@ -159,6 +162,16 @@ npm run preview
    publishable `sb_publishable_...` (**Project Settings > API Keys**). A `anon` legada também funciona. Essa chave é
    pública por natureza; quem decide o que ela pode fazer é a RLS. Nunca use a `secret` nem a `service_role` aqui.
 6. Na Vercel, cadastre as mesmas duas variáveis em **Settings > Environment Variables**.
+7. Opcional, conta de visitante: crie outro usuário em **Authentication > Users** com um e-mail que não seja de
+   ninguém e coloque-o na equipe como visitante:
+
+   ```sql
+   insert into public.equipe (user_id, nome, papel)
+   select id, 'Visitante', 'visitante' from auth.users where email = 'visitante@exemplo.com';
+   ```
+
+   Depois cadastre `PUBLIC_BALCAO_VISITANTE_EMAIL` e `PUBLIC_BALCAO_VISITANTE_SENHA` na Vercel. Essa senha fica
+   pública na página de propósito; o que protege os dados é o papel `visitante` no banco.
 
 ## Testes
 
