@@ -569,6 +569,16 @@ thumbs[SONHO_MONTADO_ID] = thumbs['sonho-creme'];
     background: var(--acucar-2);
   }
 
+  :global(.link-btn:disabled),
+  :global(.btn:disabled) {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  :global(.link-btn:disabled:hover) {
+    background: transparent;
+  }
+
   :global(.address),
   :global(.obs) {
     font-size: 0.9375rem;
